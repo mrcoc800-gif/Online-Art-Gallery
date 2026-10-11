@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA | Fine Art Gallery & Auction House</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            400: '#e5c158',
+                            500: '#d4af37',
+                            600: '#aa8c2c',
+                        },
+                        dark: {
+                            900: '#0a0a0c',
+                            800: '#121216',
+                            700: '#1a1a22',
+                            600: '#252530'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0c;
+            color: #e4e4e7;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .font-serif {
+            font-family: 'Cinzel', serif;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #f3e7e1 0%, #d4af37 50%, #aa8c2c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-bg-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
+        }
+        .gold-border-gradient {
+            border-image: linear-gradient(to right, #d4af37, #4a3b10) 1;
+        }
+        .glass-panel {
+            background: rgba(18, 18, 22, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0a0a0c;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #252530;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+    </style>
+</head>
+<body class="custom-scrollbar min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black">
+
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 transition-all duration-300">
+        <div class="glass-panel w-full max-w-md p-8 rounded-2xl shadow-2xl border border-gold-500/30 text-center relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-48 h-48 bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="mb-6">
+                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400 text-2xl">
+                    <i class="fa-solid fa-palette"></i>
+                </div>
+                <h2 class="font-serif text-3xl font-bold tracking-wider gold-gradient">AURA GALLERY</h2>
+                <p class="text-xs text-zinc-400 mt-1 uppercase tracking-widest">Collector Portal Login</p>
+            </div>
+
+            <form id="loginForm" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1">User ID / Student ID</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+                        <input type="text" id="loginId" required placeholder="Enter User ID"
+                            class="w-full bg-dark-800 border border-zinc-700 focus:border-gold-500 text-zinc-100 rounded-xl py-3 pl-10 pr-4 outline-none transition text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="loginPassword" required placeholder="Enter Password"
+                            class="w-full bg-dark-800 border border-zinc-700 focus:border-gold-500 text-zinc-100 rounded-xl py-3 pl-10 pr-4 outline-none transition text-sm">
+                    </div>
+                </div>
+
+                <div id="loginError" class="hidden p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs text-center font-medium">
+                    Invalid Credentials! Please try again.
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3.5 mt-2 rounded-xl gold-bg-gradient text-black font-semibold text-sm hover:opacity-95 transition shadow-lg shadow-gold-500/20 active:scale-[0.99]">
+                    Access Private Gallery <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-zinc-800/80 text-xs text-zinc-500 flex justify-between items-center">
+                <span>Demo User ID: <strong class="text-zinc-300">2500070017</strong></span>
+                <span>Pass: <strong class="text-zinc-300">kaif0056</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <header class="sticky top-0 z-40 glass-panel border-b border-zinc-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/40 flex items-center justify-center text-gold-400 group-hover:scale-105 transition">
+                        <i class="fa-solid fa-palette text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-serif text-2xl font-bold tracking-wider gold-gradient">AURA</span>
+                        <span class="block text-[9px] text-zinc-400 uppercase tracking-widest -mt-1">Fine Art Marketplace</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-zinc-300">
+                    <a href="#explore" class="hover:text-gold-400 transition flex items-center gap-2"><i class="fa-solid fa-compass text-xs"></i> Categories</a>
+                    <a href="#auctions" class="hover:text-gold-400 transition flex items-center gap-2"><i class="fa-solid fa-gavel text-xs text-gold-500"></i> Live Auctions</a>
+                    <a href="#artists" class="hover:text-gold-400 transition flex items-center gap-2"><i class="fa-solid fa-user-astronaut text-xs"></i> Artists</a>
+                    <a href="#exhibitions" class="hover:text-gold-400 transition flex items-center gap-2"><i class="fa-solid fa-vr-cardboard text-xs"></i> Exhibitions</a>
+                    <a href="#reviews" class="hover:text-gold-400 transition flex items-center gap-2"><i class="fa-solid fa-star text-xs"></i> Reviews</a>
+                </nav>
+
+                <!-- Actions & User Profile -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="openUploadModal()" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-gold-500/40 text-gold-400 hover:bg-gold-500/10 transition text-xs font-semibold">
+                        <i class="fa-solid fa-plus"></i> Upload Artwork
+                    </button>
+
+                    <!-- Authenticated User Tag -->
+                    <div id="userBadge" class="hidden flex items-center gap-3 pl-3 border-l border-zinc-800">
+                        <div class="text-right">
+                            <span class="block text-[10px] text-zinc-400 uppercase font-bold">Collector</span>
+                            <span id="displayUserId" class="text-xs font-semibold text-gold-400">2500070017</span>
+                        </div>
+                        <button onclick="logout()" title="Logout" class="w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-power-off"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mobile Menu Trigger -->
+                    <button onclick="toggleMobileNav()" class="lg:hidden p-2 text-zinc-400 hover:text-white">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer -->
+        <div id="mobileNav" class="hidden lg:hidden border-t border-zinc-800 bg-dark-800/95 p-4 space-y-3 text-sm">
+            <a href="#explore" onclick="toggleMobileNav()" class="block p-2 text-zinc-300 hover:text-gold-400"><i class="fa-solid fa-compass mr-2"></i> Categories</a>
+            <a href="#auctions" onclick="toggleMobileNav()" class="block p-2 text-zinc-300 hover:text-gold-400"><i class="fa-solid fa-gavel mr-2"></i> Live Auctions</a>
+            <a href="#artists" onclick="toggleMobileNav()" class="block p-2 text-zinc-300 hover:text-gold-400"><i class="fa-solid fa-user-astronaut mr-2"></i> Artists</a>
+            <a href="#exhibitions" onclick="toggleMobileNav()" class="block p-2 text-zinc-300 hover:text-gold-400"><i class="fa-solid fa-vr-cardboard mr-2"></i> Exhibitions</a>
+            <button onclick="openUploadModal(); toggleMobileNav();" class="w-full text-left p-2 text-gold-400 font-semibold"><i class="fa-solid fa-plus mr-2"></i> Upload Artwork</button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="relative py-20 lg:py-32 overflow-hidden border-b border-zinc-800/60">
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gold-500/10 via-dark-900/80 to-dark-900 pointer-events-none"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-xs font-medium">
+                            <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span> Virtual Fine Art Exhibition Active
+                        </div>
+                        <h1 class="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-white leading-tight">
+                            Discover Rare Masterpieces & <span class="gold-gradient">Curated Collections</span>
+                        </h1>
+                        <p class="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-light">
+                            Connect directly with renowned global artists. Buy authenticated original works, join live fine art auctions, and build your digital legacy.
+                        </p>
+                        <div class="flex flex-wrap gap-4 justify-center lg:justify-start pt-4">
+                            <a href="#explore" class="px-8 py-4 rounded-xl gold-bg-gradient text-black font-semibold text-sm shadow-xl shadow-gold-500/10 hover:opacity-90 transition">
+                                Explore Artworks <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </a>
+                            <a href="#auctions" class="px-8 py-4 rounded-xl border border-zinc-700 bg-dark-800/80 hover:border-gold-500/50 text-white font-medium text-sm transition">
+                                <i class="fa-solid fa-gavel text-gold-400 mr-2"></i> Join Live Auction
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Highlighted Artwork Hero Card -->
+                    <div class="lg:col-span-5">
+                        <div class="glass-panel p-4 rounded-2xl border border-gold-500/20 shadow-2xl relative group">
+                            <div class="overflow-hidden rounded-xl h-80 relative">
+                                <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80" alt="Masterpiece" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-xs font-semibold text-gold-400">
+                                    <i class="fa-solid fa-crown mr-1"></i> Featured Highlight
+                                </div>
+                            </div>
+                            <div class="mt-4 flex justify-between items-end">
+                                <div>
+                                    <p class="text-xs text-gold-400 uppercase tracking-widest font-semibold">Oil on Canvas</p>
+                                    <h3 class="font-serif text-xl font-bold text-white">Ethereal Resonance</h3>
+                                    <p class="text-xs text-zinc-400 mt-0.5">By Elena Rostova</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-zinc-400 uppercase">Valuation</p>
+                                    <p class="font-serif text-lg font-bold text-white">$14,500</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="explore" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <p class="text-xs font-bold text-gold-400 uppercase tracking-widest mb-1">CURATED CATALOG</p>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">Explore Original Artworks</h2>
+                </div>
+
+                <!-- Category Pills -->
+                <div class="flex flex-wrap gap-2" id="categoryFilters">
+                    <button onclick="filterCategory('All')" class="filter-btn active-filter px-4 py-2 rounded-xl text-xs font-semibold bg-gold-500 text-black border border-gold-500 transition">All Categories</button>
+                    <button onclick="filterCategory('Abstract')" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 border border-zinc-800 hover:border-gold-500/50 transition">Abstract</button>
+                    <button onclick="filterCategory('Oil Painting')" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 border border-zinc-800 hover:border-gold-500/50 transition">Oil Painting</button>
+                    <button onclick="filterCategory('Sculpture')" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 border border-zinc-800 hover:border-gold-500/50 transition">Sculpture</button>
+                    <button onclick="filterCategory('Digital Art')" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 border border-zinc-800 hover:border-gold-500/50 transition">Digital Art</button>
+                    <button onclick="filterCategory('Photography')" class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 border border-zinc-800 hover:border-gold-500/50 transition">Photography</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Artworks Grid -->
+            <div id="artworkContainer" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Javascript will inject artwork cards here -->
+            </div>
+        </section>
+
+        <section id="auctions" class="py-20 bg-dark-800/50 border-y border-zinc-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-2xl mx-auto mb-14">
+                    <span class="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-widest">
+                        <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i> Live Bidding Hall
+                    </span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mt-3">High-Stakes Fine Art Auctions</h2>
+                    <p class="text-zinc-400 text-sm mt-2">Place bids in real-time. Verified authenticity guaranteed on all auction items.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Auction Item 1 -->
+                    <div class="glass-panel p-6 rounded-2xl border border-zinc-800 flex flex-col sm:flex-row gap-6 items-center">
+                        <div class="w-full sm:w-48 h-56 rounded-xl overflow-hidden relative flex-shrink-0">
+                            <img src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=600&q=80" alt="Auction 1" class="w-full h-full object-cover">
+                            <div class="absolute top-2 left-2 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] text-zinc-300 font-mono">
+                                LOT #104
+                            </div>
+                        </div>
+                        <div class="flex-grow space-y-3 text-left w-full">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-serif text-xl font-bold text-white">Chromatics in Motion</h3>
+                                    <p class="text-xs text-zinc-400">By Marcus Vance</p>
+                                </div>
+                                <span class="text-xs text-gold-400 font-mono bg-gold-500/10 px-2 py-1 rounded border border-gold-500/20" id="timer1">04h 22m 15s</span>
+                            </div>
+                            <div class="p-3 rounded-xl bg-dark-900/80 border border-zinc-800 flex justify-between items-center">
+                                <div>
+                                    <span class="text-[10px] text-zinc-500 uppercase block">Current Highest Bid</span>
+                                    <span class="font-serif text-xl font-bold text-gold-400" id="bidPrice1">$6,200</span>
+                                </div>
+                                <span class="text-xs text-zinc-400" id="bidder1">14 Bids placed</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="number" id="bidInput1" placeholder="Min $6,300" class="w-1/2 bg-dark-900 border border-zinc-700 rounded-xl px-3 text-sm text-white focus:border-gold-500 outline-none">
+                                <button onclick="placeBid(1)" class="w-1/2 py-2.5 rounded-xl gold-bg-gradient text-black font-semibold text-xs hover:opacity-90 transition">
+                                    Place Bid
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auction Item 2 -->
+                    <div class="glass-panel p-6 rounded-2xl border border-zinc-800 flex flex-col sm:flex-row gap-6 items-center">
+                        <div class="w-full sm:w-48 h-56 rounded-xl overflow-hidden relative flex-shrink-0">
+                            <img src="https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80" alt="Auction 2" class="w-full h-full object-cover">
+                            <div class="absolute top-2 left-2 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] text-zinc-300 font-mono">
+                                LOT #105
+                            </div>
+                        </div>
+                        <div class="flex-grow space-y-3 text-left w-full">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-serif text-xl font-bold text-white">Neon Solitude</h3>
+                                    <p class="text-xs text-zinc-400">By Sarah Jenkins</p>
+                                </div>
+                                <span class="text-xs text-gold-400 font-mono bg-gold-500/10 px-2 py-1 rounded border border-gold-500/20" id="timer2">01h 45m 50s</span>
+                            </div>
+                            <div class="p-3 rounded-xl bg-dark-900/80 border border-zinc-800 flex justify-between items-center">
+                                <div>
+                                    <span class="text-[10px] text-zinc-500 uppercase block">Current Highest Bid</span>
+                                    <span class="font-serif text-xl font-bold text-gold-400" id="bidPrice2">$3,850</span>
+                                </div>
+                                <span class="text-xs text-zinc-400" id="bidder2">9 Bids placed</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="number" id="bidInput2" placeholder="Min $3,950" class="w-1/2 bg-dark-900 border border-zinc-700 rounded-xl px-3 text-sm text-white focus:border-gold-500 outline-none">
+                                <button onclick="placeBid(2)" class="w-1/2 py-2.5 rounded-xl gold-bg-gradient text-black font-semibold text-xs hover:opacity-90 transition">
+                                    Place Bid
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="artists" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <p class="text-xs font-bold text-gold-400 uppercase tracking-widest mb-1">CREATORS & VISIONARIES</p>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">Featured Artists</h2>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Artist 1 -->
+                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 text-center hover:border-gold-500/30 transition">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Artist" class="w-24 h-24 rounded-full mx-auto object-cover ring-2 ring-gold-500/40 mb-4">
+                    <h3 class="font-serif text-xl font-bold text-white">Elena Rostova</h3>
+                    <p class="text-xs text-gold-400 mb-3">Oil Painting & Impressionism</p>
+                    <p class="text-xs text-zinc-400 line-clamp-3 mb-4">Master of classical oil light techniques blended with contemporary emotional landscapes.</p>
+                    <button onclick="showToast('Artist Profile loaded!')" class="w-full py-2 rounded-xl bg-dark-800 hover:bg-zinc-800 text-zinc-200 text-xs font-medium border border-zinc-700 transition">View Portfolio (18 Works)</button>
+                </div>
+
+                <!-- Artist 2 -->
+                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 text-center hover:border-gold-500/30 transition">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80" alt="Artist" class="w-24 h-24 rounded-full mx-auto object-cover ring-2 ring-gold-500/40 mb-4">
+                    <h3 class="font-serif text-xl font-bold text-white">Marcus Vance</h3>
+                    <p class="text-xs text-gold-400 mb-3">Abstract & Modern Expressionism</p>
+                    <p class="text-xs text-zinc-400 line-clamp-3 mb-4">Focuses on high-contrast color field compositions exploring human consciousness.</p>
+                    <button onclick="showToast('Artist Profile loaded!')" class="w-full py-2 rounded-xl bg-dark-800 hover:bg-zinc-800 text-zinc-200 text-xs font-medium border border-zinc-700 transition">View Portfolio (24 Works)</button>
+                </div>
+
+                <!-- Artist 3 -->
+                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 text-center hover:border-gold-500/30 transition">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80" alt="Artist" class="w-24 h-24 rounded-full mx-auto object-cover ring-2 ring-gold-500/40 mb-4">
+                    <h3 class="font-serif text-xl font-bold text-white">Aria Thorne</h3>
+                    <p class="text-xs text-gold-400 mb-3">Digital Sculpture & Generative Art</p>
+                    <p class="text-xs text-zinc-400 line-clamp-3 mb-4">Pioneering 3D algorithmic art and interactive digital sculptures for private galleries.</p>
+                    <button onclick="showToast('Artist Profile loaded!')" class="w-full py-2 rounded-xl bg-dark-800 hover:bg-zinc-800 text-zinc-200 text-xs font-medium border border-zinc-700 transition">View Portfolio (12 Works)</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="exhibitions" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-gold-500/30 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div class="space-y-4 max-w-xl z-10 text-center lg:text-left">
+                    <span class="px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 text-xs font-bold uppercase tracking-widest border border-gold-500/30">
+                        Upcoming Virtual Exhibition
+                    </span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">"Shadows & Echoes: The Neo-Classical Shift"</h2>
+                    <p class="text-zinc-300 text-sm leading-relaxed">
+                        Join curator Lord Howard for an exclusive 3D virtual walkthrough featuring 40 unreleased original artworks across Europe.
+                    </p>
+                    <div class="flex items-center gap-6 justify-center lg:justify-start text-xs text-zinc-400 pt-2">
+                        <span><i class="fa-regular fa-calendar text-gold-400 mr-2"></i> Oct 28, 2026</span>
+                        <span><i class="fa-regular fa-clock text-gold-400 mr-2"></i> 18:00 GMT</span>
+                    </div>
+                </div>
+
+                <div class="z-10 flex-shrink-0">
+                    <button onclick="rsvpExhibition(this)" class="px-8 py-4 rounded-xl gold-bg-gradient text-black font-bold text-sm shadow-xl shadow-gold-500/20 hover:opacity-90 transition">
+                        RSVP VIP Pass <i class="fa-solid fa-ticket ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="reviews" class="py-20 bg-dark-800/30 border-t border-zinc-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-12 gap-12">
+                    <!-- Left: Reviews List -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div>
+                            <p class="text-xs font-bold text-gold-400 uppercase tracking-widest mb-1">COLLECTOR TESTIMONIALS</p>
+                            <h2 class="font-serif text-3xl font-bold text-white">Community & Collector Feedback</h2>
+                        </div>
+
+                        <div id="reviewsContainer" class="space-y-4">
+                            <!-- Review 1 -->
+                            <div class="glass-panel p-5 rounded-2xl border border-zinc-800 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-white text-sm">Dr. Julian Hayes</span>
+                                    <div class="text-gold-400 text-xs">
+                                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-zinc-300">"Acquired 'Ethereal Resonance' through AURA. The white-glove delivery and physical authenticity documentation were exemplary."</p>
+                                <span class="text-[10px] text-zinc-500 block">Verified Purchase • 2 days ago</span>
+                            </div>
+
+                            <!-- Review 2 -->
+                            <div class="glass-panel p-5 rounded-2xl border border-zinc-800 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-white text-sm">Claire DeWitt</span>
+                                    <div class="text-gold-400 text-xs">
+                                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-zinc-300">"The live bidding auction algorithm works flawlessly. I won LOT #102 smoothly. Highly recommended for art collectors!"</p>
+                                <span class="text-[10px] text-zinc-500 block">Verified Collector • 1 week ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Add Review Form -->
+                    <div class="lg:col-span-5">
+                        <div class="glass-panel p-6 rounded-2xl border border-zinc-800">
+                            <h3 class="font-serif text-xl font-bold text-white mb-2">Leave Collector Feedback</h3>
+                            <p class="text-xs text-zinc-400 mb-6">Share your experience buying or bidding on art platform pieces.</p>
+
+                            <form id="reviewForm" onsubmit="handleReviewSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Your Name</label>
+                                    <input type="text" id="reviewAuthor" required placeholder="e.g. Alexander Vance"
+                                        class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Rating</label>
+                                    <select id="reviewRating" class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none">
+                                        <option value="5">★★★★★ (5/5 Excellent)</option>
+                                        <option value="4">★★★★☆ (4/5 Very Good)</option>
+                                        <option value="3">★★★☆☆ (3/5 Average)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Your Review</label>
+                                    <textarea id="reviewText" rows="3" required placeholder="Write your review here..."
+                                        class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none"></textarea>
+                                </div>
+
+                                <button type="submit" class="w-full py-3 rounded-xl gold-bg-gradient text-black font-semibold text-xs hover:opacity-90 transition">
+                                    Submit Review
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="uploadModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-panel w-full max-w-lg p-6 sm:p-8 rounded-2xl border border-gold-500/30 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-white">Upload New Artwork</h3>
+                    <p class="text-xs text-zinc-400">List your masterpiece on AURA Marketplace</p>
+                </div>
+                <button onclick="closeUploadModal()" class="text-zinc-400 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form id="uploadForm" onsubmit="handleArtworkUpload(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Artwork Title</label>
+                    <input type="text" id="artTitle" required placeholder="e.g. Celestial Symphony" class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Artist Name</label>
+                        <input type="text" id="artArtist" required placeholder="Your Name" class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Category</label>
+                        <select id="artCategory" class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none">
+                            <option value="Abstract">Abstract</option>
+                            <option value="Oil Painting">Oil Painting</option>
+                            <option value="Sculpture">Sculpture</option>
+                            <option value="Digital Art">Digital Art</option>
+                            <option value="Photography">Photography</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Price ($ USD)</label>
+                        <input type="number" id="artPrice" required placeholder="4500" class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Image URL</label>
+                        <input type="url" id="artImage" required placeholder="https://..." class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Description</label>
+                    <textarea id="artDescription" rows="3" required placeholder="Describe materials, technique, and inspiration..." class="w-full bg-dark-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold-500 outline-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-xl gold-bg-gradient text-black font-bold text-sm hover:opacity-90 transition mt-4">
+                    Publish Artwork to Gallery
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 glass-panel border border-gold-500/40 px-5 py-3 rounded-xl text-xs font-semibold text-white shadow-2xl flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-gold-400 text-lg"></i>
+        <span id="toastMsg">Action completed successfully!</span>
+    </div>
+
+    <footer class="bg-dark-900 border-t border-zinc-800/80 py-12 text-xs text-zinc-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div class="flex items-center space-x-3">
+                <span class="font-serif text-lg font-bold gold-gradient">AURA GALLERY</span>
+                <span>© 2026 Fine Art Platform. All rights reserved.</span>
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-gold-400 transition">Terms of Service</a>
+                <a href="#" class="hover:text-gold-400 transition">Privacy Policy</a>
+                <a href="#" class="hover:text-gold-400 transition">Authenticity Guarantee</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Default Credentials
+        const VALID_USER_ID = "2500070017";
+        const VALID_PASSWORD = "kaif0056";
+
+        // Initial Sample Artworks Data
+        let artworks = [
+            {
+                id: 1,
+                title: "Nebula Dreams",
+                artist: "Marcus Vance",
+                category: "Abstract",
+                price: 8500,
+                image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80",
+                description: "Vibrant liquid acrylic abstract expressionism exploring cosmic dimensions."
+            },
+            {
+                id: 2,
+                title: "Gilded Silence",
+                artist: "Elena Rostova",
+                category: "Oil Painting",
+                price: 12000,
+                image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80",
+                description: "Classic oil portrait infused with 24k gold leaf accents on linen."
+            },
+            {
+                id: 3,
+                title: "Prism Monolith",
+                artist: "Aria Thorne",
+                category: "Sculpture",
+                price: 15400,
+                image: "https://images.unsplash.com/photo-1554188248-986adbb73be4?auto=format&fit=crop&w=800&q=80",
+                description: "Hand-carved optical glass sculpture refracting spectrum light."
+            },
+            {
+                id: 4,
+                title: "Cybernetic Horizon",
+                artist: "Kaelen Voss",
+                category: "Digital Art",
+                price: 4200,
+                image: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=80",
+                description: "Limited 1/1 digital render rendered in 8K ray-traced lighting."
+            },
+            {
+                id: 5,
+                title: "Nordic Mist",
+                artist: "Sven Hedlund",
+                category: "Photography",
+                price: 3100,
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+                description: "Medium format archival photographic print of quiet sea fog."
+            },
+            {
+                id: 6,
+                title: "Ethereal Echoes",
+                artist: "Elena Rostova",
+                category: "Oil Painting",
+                price: 9800,
+                image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
+                description: "Atmospheric oil study of light filtering through autumn trees."
+            }
+        ];
+
+        // System Initialization
+        window.onload = function() {
+            checkSession();
+            renderArtworks(artworks);
+        };
+
+        // Authentication & Session Management
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('loginId').value.trim();
+            const passInput = document.getElementById('loginPassword').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            if (idInput === VALID_USER_ID && passInput === VALID_PASSWORD) {
+                localStorage.setItem('aura_user', idInput);
+                errorDiv.classList.add('hidden');
+                document.getElementById('loginModal').classList.add('hidden');
+                updateUserUI(idInput);
+                showToast(`Welcome Collector #${idInput}`);
+            } else {
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        function checkSession() {
+            const savedUser = localStorage.getItem('aura_user');
+            if (savedUser) {
+                document.getElementById('loginModal').classList.add('hidden');
+                updateUserUI(savedUser);
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function updateUserUI(userId) {
+            document.getElementById('userBadge').classList.remove('hidden');
+            document.getElementById('displayUserId').innerText = userId;
+        }
+
+        function logout() {
+            localStorage.removeItem('aura_user');
+            document.getElementById('userBadge').classList.add('hidden');
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginId').value = '';
+            document.getElementById('loginPassword').value = '';
+            showToast('Logged out successfully');
+        }
+
+        // Render Artworks Grid
+        function renderArtworks(items) {
+            const container = document.getElementById('artworkContainer');
+            container.innerHTML = '';
+
+            items.forEach(art => {
+                const card = document.createElement('div');
+                card.className = "glass-panel rounded-2xl overflow-hidden border border-zinc-800 hover:border-gold-500/40 transition duration-300 flex flex-col justify-between group";
+                card.innerHTML = `
+                    <div>
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="${art.image}" alt="${art.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x400/18181b/d4af37?text=Artwork+Image'">
+                            <span class="absolute top-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-[10px] text-gold-400 font-semibold border border-gold-500/20">
+                                ${art.category}
+                            </span>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <h3 class="font-serif text-xl font-bold text-white group-hover:text-gold-400 transition">${art.title}</h3>
+                            <p class="text-xs text-zinc-400">By ${art.artist}</p>
+                            <p class="text-xs text-zinc-500 line-clamp-2 pt-1">${art.description}</p>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0 flex justify-between items-center border-t border-zinc-800/60 mt-4">
+                        <div>
+                            <span class="text-[10px] text-zinc-500 uppercase block">Price</span>
+                            <span class="font-serif text-lg font-bold text-white">$${art.price.toLocaleString()}</span>
+                        </div>
+                        <button onclick="buyArtwork('${art.title}', ${art.price})" class="px-4 py-2 rounded-xl gold-bg-gradient text-black font-bold text-xs hover:opacity-90 transition">
+                            Buy Now
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Filter Categories
+        function filterCategory(cat) {
+            const btns = document.querySelectorAll('.filter-btn');
+            btns.forEach(btn => {
+                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All Categories'))) {
+                    btn.className = "filter-btn active-filter px-4 py-2 rounded-xl text-xs font-semibold bg-gold-500 text-black border border-gold-500 transition";
+                } else {
+                    btn.className = "filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-zinc-400 border border-zinc-800 hover:border-gold-500/50 transition";
+                }
+            });
+
+            if (cat === 'All') {
+                renderArtworks(artworks);
+            } else {
+                const filtered = artworks.filter(a => a.category === cat);
+                renderArtworks(filtered);
+            }
+        }
+
+        // Live Bidding System Logic
+        let auctionBids = {
+            1: 6200,
+            2: 3850
+        };
+
+        function placeBid(lotId) {
+            const input = document.getElementById(`bidInput${lotId}`);
+            const newBid = parseFloat(input.value);
+            const currentBid = auctionBids[lotId];
+
+            if (isNaN(newBid) || newBid <= currentBid) {
+                showToast(`Bid must be higher than $${currentBid.toLocaleString()}`);
+                return;
+            }
+
+            auctionBids[lotId] = newBid;
+            document.getElementById(`bidPrice${lotId}`).innerText = `$${newBid.toLocaleString()}`;
+            document.getElementById(`bidder${lotId}`).innerText = "Updated by You";
+            input.value = '';
+            showToast(`Bid of $${newBid.toLocaleString()} successfully recorded!`);
+        }
+
+        // Purchase Functionality
+        function buyArtwork(title, price) {
+            showToast(`Acquisition initiated for "${title}" ($${price.toLocaleString()})`);
+        }
+
+        // Upload Artwork Modal Handlers
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+        }
+
+        function handleArtworkUpload(e) {
+            e.preventDefault();
+            const newArt = {
+                id: artworks.length + 1,
+                title: document.getElementById('artTitle').value,
+                artist: document.getElementById('artArtist').value,
+                category: document.getElementById('artCategory').value,
+                price: parseFloat(document.getElementById('artPrice').value),
+                image: document.getElementById('artImage').value,
+                description: document.getElementById('artDescription').value
+            };
+
+            artworks.unshift(newArt);
+            renderArtworks(artworks);
+            closeUploadModal();
+            document.getElementById('uploadForm').reset();
+            showToast('Artwork published successfully!');
+        }
+
+        // Add Review Handler
+        function handleReviewSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('reviewAuthor').value;
+            const rating = document.getElementById('reviewRating').value;
+            const text = document.getElementById('reviewText').value;
+
+            const reviewsContainer = document.getElementById('reviewsContainer');
+            const reviewCard = document.createElement('div');
+            reviewCard.className = "glass-panel p-5 rounded-2xl border border-zinc-800 space-y-2 animate-fade-in";
+            
+            let stars = '';
+            for(let i=0; i<rating; i++) stars += '<i class="fa-solid fa-star"></i>';
+
+            reviewCard.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-white text-sm">${name}</span>
+                    <div class="text-gold-400 text-xs">${stars}</div>
+                </div>
+                <p class="text-xs text-zinc-300">"${text}"</p>
+                <span class="text-[10px] text-zinc-500 block">Verified Collector • Just now</span>
+            `;
+
+            reviewsContainer.prepend(reviewCard);
+            document.getElementById('reviewForm').reset();
+            showToast('Review submitted!');
+        }
+
+        // RSVP Handler
+        function rsvpExhibition(btn) {
+            btn.innerText = "RSVP Confirmed ✓";
+            btn.className = "px-8 py-4 rounded-xl bg-zinc-800 text-gold-400 border border-gold-500/40 font-bold text-sm transition";
+            showToast('VIP Pass sent to your registered account!');
+        }
+
+        // UI Utility: Mobile Nav Toggle
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobileNav');
+            nav.classList.toggle('hidden');
+        }
+
+        // UI Utility: Toast Notifications
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
